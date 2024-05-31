@@ -1,0 +1,6 @@
+my_string = input ('Как вам моя практическая работа? ')
+print ('Длина символов введёного текста:', len(my_string))
+print (my_string .upper())
+print (my_string .lower().replace(' ',''))
+print (my_string[0])
+print (my_string[-1])
