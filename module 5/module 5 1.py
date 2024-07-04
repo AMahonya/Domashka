@@ -2,8 +2,7 @@ class House:
     houses_history = []
 
     def __new__(cls, *args, **kwargs):
-        houses_name = args[0]  # получаем название дома из args по индексу
-        cls.houses_history.append(houses_name)  # добавляем название дома в атрибут houses_history
+        cls.houses_history.append(args[0])  # добавляем назв дома в атриб houses_history назв берём из args по индексу
         return super().__new__(cls)  # создаем новый обьект
 
     def __init__(self, name, number_of_floors):
