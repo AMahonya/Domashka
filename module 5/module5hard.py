@@ -60,11 +60,12 @@ class UrTube:
         for user in self.users:
             if user.nickname == nickname:
                 print(f"Пользователь {nickname} уже существует.")
-                break
-        else:
-            new_user = User(nickname, password, age)
-            self.users.append(new_user)
-            self.current_user = new_user
+                return
+
+        new_user = User(nickname, password, age)
+        self.users.append(new_user)
+        self.current_user = new_user
+
 
     def log_out(self):
         self.current_user = None
