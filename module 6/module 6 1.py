@@ -36,9 +36,10 @@ class Flower(Plant):
 
 
 class Fruit(Plant):
-    def __init__(self, name):
-        super().__init__(name)
-        self.edible = True
+    edible = True
+    # def __init__(self, name):
+    #     super().__init__(name)
+
 
 
 a1 = Predator('Волк с Уолл-Стрит')
