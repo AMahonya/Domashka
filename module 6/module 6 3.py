@@ -5,9 +5,8 @@ class Horse:
 
     '''
 
-    def __init__(self):
-        self.x_distance = 0
-        self.sound = "Frrrr"
+    x_distance = 0
+    sound = "Frrrr"
 
     def run(self, dx):
         self.x_distance += dx
@@ -20,24 +19,23 @@ class Eagle:
     Этот класс описывает Орла
 
     '''
-    def __init__(self):
-        self.y_distance = 0
-        self.sound = "I train, eat, sleep, and repeat"
+    y_distance = 0
+    sound = "I train, eat, sleep, and repeat"
 
     def fly(self, dy):
         self.y_distance += dy
 
 
-class Pegasus(Horse,Eagle):
+class Pegasus(Eagle, Horse):
     '''
 
     Этот класс описывает пегаса являеться наследником Horse и Eagle
 
     '''
 
-    def __init__(self):
-        Horse.__init__(self)
-        Eagle.__init__(self)
+    # def __init__(self):
+    #     super().__init__()
+
 
 
     def move(self, dx, dy):
@@ -48,6 +46,7 @@ class Pegasus(Horse,Eagle):
         return self.x_distance, self.y_distance
 
     def voice(self):
+
         print(self.sound)
 
 
