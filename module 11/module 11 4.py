@@ -11,8 +11,9 @@ class Introspection:
 
 
 def introspection_info(obj):
-    info = {'Тип': type(obj), 'Атрибуты': dir(obj)}
-    methods = [method for method in dir(obj) if callable(getattr(obj, method))]
+    info = {'Тип': type(obj),
+            'Атрибуты': [attr for attr in dir(obj) if not callable(getattr(obj, attr)) and not attr.startswith('__')]}
+    methods = [method for method in dir(obj) if callable(getattr(obj, method)) and not method.startswith('__')]
     info['Методы'] = methods
 
     try:
