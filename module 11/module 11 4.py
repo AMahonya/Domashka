@@ -32,7 +32,7 @@ def introspection_info(obj):
         info['Первые 3 символа'] = obj[:3]
 
     elif hasattr(obj, "__doc__"):
-        info['Документация'] = obj.__doc__
+        info['Документация'] = obj.__doc__ #
 
     return info
 
