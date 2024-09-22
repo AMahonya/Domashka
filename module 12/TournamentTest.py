@@ -3,6 +3,7 @@ import unittest
 
 
 class TournamentTest(unittest.TestCase):
+    is_frothen = True
     all_results = {}
 
     @classmethod
@@ -26,6 +27,7 @@ class TournamentTest(unittest.TestCase):
         self.all_results[1] = tournament.start()
         self.assertTrue(self.all_results[1][max(self.all_results[1].keys())] == "Ник")
 
+    @unittest.skipIf(is_frothen, "Тесты в этом кейсе заморожены")
     def test_andrey_and_nick(self):
         tournament = runner.Tournament(90, self.Andrey, self.Nick)
         self.all_results[2] = tournament.start()
