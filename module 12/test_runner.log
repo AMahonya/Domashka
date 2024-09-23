@@ -1,0 +1,20 @@
+2024-09-23 19:59:51,384 | WARNING | Неверная скорость для Runner
+Скорость не может быть отрицательной, сейчас -5
+2024-09-23 19:59:51,385 | WARNING | Traceback (most recent call last):
+  File "D:\Python Domashka\Domashka\Domashka\module 12\runner_test.py", line 14, in test_walk
+    runner = Runner("John Doe", -5)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python Domashka\Domashka\Domashka\module 12\runner.py", line 51, in __init__
+    raise ValueError(f'Скорость не может быть отрицательной, сейчас {speed}')
+ValueError: Скорость не может быть отрицательной, сейчас -5
+
+2024-09-23 19:59:51,385 | WARNING | Неверный тип данных для обьекта Runner
+Имя может быть только строкой, передано int
+2024-09-23 19:59:51,386 | WARNING | Traceback (most recent call last):
+  File "D:\Python Domashka\Domashka\Domashka\module 12\runner_test.py", line 25, in test_run
+    runner = Runner(113, 10)
+             ^^^^^^^^^^^^^^^
+  File "D:\Python Domashka\Domashka\Domashka\module 12\runner.py", line 46, in __init__
+    raise TypeError(f'Имя может быть только строкой, передано {type(name).__name__}')
+TypeError: Имя может быть только строкой, передано int
+
