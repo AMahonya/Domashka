@@ -45,12 +45,39 @@ balance INTEGER NOT NULL
 
 # Выбор пользователей у которых возраст не равен 60 с выводом в консоль
 
-cursor.execute("SELECT username, email, age, balance FROM Users WHERE age != 60")
-users = cursor.fetchall()
+# cursor.execute("SELECT username, email, age, balance FROM Users WHERE age != 60")
+# users = cursor.fetchall()
+#
+# for user in users:
+#     username, email, age, balance = user
+#     print(f"Имя: {username} | Почта: {email} | Возраст: {age} | Баланс: {balance}")
 
-for user in users:
-    username, email, age, balance = user
-    print(f"Имя: {username} | Почта: {email} | Возраст: {age} | Баланс: {balance}")
+
+# Удаляем пользователя с id = 6
+
+# cursor.execute("DELETE FROM Users WHERE id = ?", (6,))
+
+
+# Считаем общее количество записей в таблице
+
+cursor.execute("SELECT COUNT(*) FROM Users")
+count = cursor.fetchone()[0]
+print(f'Общее количество записей в таблице: {count}')
+
+# Считаем сумму баланса всех пользователей
+
+cursor.execute("SELECT SUM(balance) FROM Users")
+sum_balance = cursor.fetchone()[0]
+print(f'Сумма баланса всех пользователей: {sum_balance}')
+
+# Высчитываем средний баланс всех пользователей
+
+cursor.execute("SELECT AVG(balance) FROM Users")
+avg_balance = cursor.fetchone()[0]
+print(f'Средний баланс всех пользователей: {avg_balance}')
+
+
+
 
 connection.commit()
 connection.close()
