@@ -7,6 +7,8 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import asyncio
 from API import *
+from crud_functions import *
+from module_14 import crud_functions
 
 logging.basicConfig(level=logging.INFO,
                     filemode="w",
@@ -14,9 +16,14 @@ logging.basicConfig(level=logging.INFO,
                     encoding= 'utf-8',
                     format='%(asctime)s | %(levelname)s | %(message)s')
 
+DATABASE = 'products.db'
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+crud_functions.initiate_db()
+# crud_functions.add_products()
+
 
 
 start_kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
@@ -114,21 +121,28 @@ async def info(message):
 
 @dp.message_handler(text="Купить")
 async def get_buying_list(message):
-    with open("fail\Amino_Isolate.jpg", "rb") as photo:
-        await message.answer_photo(photo,
-                                   "Название: Amino Isolate | Описание: 280 гр | Цена: 1990 ₽\n")
+    products = crud_functions.get_all_products()
 
-    with open("fail\Amino_Tabs.jpg", "rb") as photo:
-        await message.answer_photo(photo,
-                                   "Название: Amino Tabs | Описание: 200 таблеток | Цена: 3200 ₽\n")
-
-    with open("fail\Mega_Massa.jpg", "rb") as photo:
-        await message.answer_photo(photo,
-                                   "Название: Mega Mass | Описание: 3000 гр | Цена: 8229 ₽\n")
-
-    with open("fail\Whey_protein.jpg", "rb") as photo:
-        await message.answer_photo(photo,
-                                    "Название: Whey Protein | Описание: 1000 гр | Цена: 6555 ₽\n")
+    for product in products:
+        product_id, title, description, price = product
+        await message.answer_photo(
+            photo=open(f'fail/photo{product_id}.jpg', 'rb'),
+            caption=f'Название: {title} | Описание: {description} | Цена: {price} ₽\n')
+    # with open("fail\photo1.jpg", "rb") as photo:
+    #     await message.answer_photo(photo,
+    #                                "Название: Amino Isolate | Описание: 280 гр | Цена: 1990 ₽\n")
+    #
+    # with open("fail\photo2.jpg", "rb") as photo:
+    #     await message.answer_photo(photo,
+    #                                "Название: Amino Tabs | Описание: 200 таблеток | Цена: 3200 ₽\n")
+    #
+    # with open("fail\photo3.jpg", "rb") as photo:
+    #     await message.answer_photo(photo,
+    #                                "Название: Mega Mass | Описание: 3000 гр | Цена: 8229 ₽\n")
+    #
+    # with open("fail\photo4.jpg", "rb") as photo:
+    #     await message.answer_photo(photo,
+    #                                 "Название: Whey Protein | Описание: 1000 гр | Цена: 6555 ₽\n")
 
     await message.answer(
         "Выберите продукт для покупки:' \n",
