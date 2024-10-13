@@ -14,6 +14,15 @@ def initiate_db():
             price INTEGER NOT NULL
         )
     ''')
+    cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                email TEXT NOT NULL,
+                age INTEGER NOT NULL,
+                balance INTEGER NOT NULL
+            )
+        ''')
 
     conn.commit()
     conn.close()
@@ -41,9 +50,18 @@ def add_products():
     conn.commit()
     conn.close()
 
+def add_user(username, email, age):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO Users (username, email, age, balance) VALUES (?,?,?,?)',
+                   (username, email, age, 1000))
+    conn.commit()
+    conn.close()
 
-
-
-
-
-
+def is_included(username):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM Users WHERE username =?', (username,))
+    count = cursor.fetchone()
+    conn.close()
+    return count[0] > 0

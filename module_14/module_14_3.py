@@ -7,8 +7,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import asyncio
 from API import *
-from crud_functions import *
-from module_14 import crud_functions
+from module_14 import crud_functions as crud
 
 logging.basicConfig(level=logging.INFO,
                     filemode="w",
@@ -21,19 +20,22 @@ DATABASE = 'products.db'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-crud_functions.initiate_db()
+crud.initiate_db()
 # crud_functions.add_products()
 
 
 
 start_kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 start_button = KeyboardButton("Начать")
+
 start_kb.add(start_button)
 
 kb = ReplyKeyboardMarkup(resize_keyboard=True)
 button = KeyboardButton(text="Информация")
 button2 = KeyboardButton(text="Рассчитать")
 button3 = KeyboardButton(text="Купить")
+button4 = KeyboardButton(text="Регистрация")
+kb.add(button4)
 kb.row(button, button2)
 kb.add(button3)
 
@@ -51,20 +53,71 @@ in_button5 = InlineKeyboardButton(text = "Whey Protein", callback_data="product_
 in_kb2.add(in_button2, in_button3, in_button4, in_button5)
 
 
-class UserStats(StatesGroup):
+
+
+class RegistrationState(StatesGroup):
+    username = State()
+    email = State()
     age = State()
-    growth = State()
-    weight = State()
 
 
 @dp.message_handler(text=["Начать"])
-async def start(message: types.Message):
+async def start(message):
     await message.answer(
-        "Привет! 👋 \n"
+        f"Привет! {message.from_user.username}👋\n"
         "Я бот помогающий твоему здоровью. 🦠👩‍⚕🧬🩺💉  \n",
         reply_markup=kb
     )
 
+
+@dp.message_handler(text=["Регистрация"])
+async def sing_up(message):
+    await message.answer("Давай зарегистрируемся."
+                         "\nВведи свой логин (только латинский алфавит):")
+    await RegistrationState.username.set()
+
+
+@dp.message_handler(state=RegistrationState.username)
+async def set_username(message, state):
+
+    username = message.text
+    if crud.is_included(username):
+        await message.answer("Пользователь существует, введите другое имя")
+        await state.set_state(RegistrationState.username)
+    else:
+        await state.update_data(username=username)
+        await message.answer("Введите свой email:")
+        await state.set_state(RegistrationState.email)
+
+@dp.message_handler(state=RegistrationState.email)
+async def set_email(message, state):
+    await state.update_data(email=message.text)
+    await message.answer("Введите свой возраст:")
+    await state.set_state(RegistrationState.age)
+
+@dp.message_handler(state=RegistrationState.age)
+async def set_age(message, state):
+    try:
+        await state.update_data(age=int(message.text))
+        data = await state.get_data()
+        username = data['username']
+        email = data['email']
+        age = data['age']
+
+        crud.add_user(username, email, age)
+
+        await message.answer("Регистрация прошла успешно! 🎉")
+        await state.finish()
+
+    except ValueError:
+        await message.answer("Возраст должен быть числом.\nПожалуйста, введите свой возраст еще раз.")
+        await state.set_state(RegistrationState.age)
+
+
+class UserStats(StatesGroup):
+    age = State()
+    growth = State()
+    weight = State()
 
 @dp.message_handler(text=["Рассчитать"])
 async def main_menu(message):
@@ -121,7 +174,7 @@ async def info(message):
 
 @dp.message_handler(text="Купить")
 async def get_buying_list(message):
-    products = crud_functions.get_all_products()
+    products = crud.get_all_products()
 
     for product in products:
         product_id, title, description, price = product
@@ -158,7 +211,7 @@ async def send_confirm_message(call):
 
 
 @dp.message_handler()
-async def helper(message: types.Message):
+async def helper(message):
     await message.answer("👋", reply_markup=start_kb)
 
 
