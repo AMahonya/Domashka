@@ -19,27 +19,32 @@ def get_users() -> List[User]:
 
 
 @app.post("/user/{username}/{age}")
-def create_user(user: User) -> str:
-    user.id = len(users)
-    users.append(user)
-    return f"{user} Регистрация прошла успешна!"
+def create_user(username: str, age: int) -> User:
+    if users:
+        new_id = users[-1].id + 1
+    else:
+        new_id = 1
+    new_user = User(id=new_id, username=username, age=age)
+    users.append(new_user)
+    return new_user
 
 
 @app.put('/user/{user_id}/{username}/{age}')
-def update_user(user_id: int, username: str, age: int) -> str:
+def update_user(user_id: int, username: str, age: int) -> User:
     try:
-        edit_user = users[user_id]
+        edit_user = next(user for user in users if user.id == user_id)
         edit_user.username = username
         edit_user.age = age
-        return f"{edit_user} Данные успешно обнавлены!"
-    except IndexError:
+        return edit_user
+    except StopIteration:
         raise HTTPException(status_code=404, detail="User was not found")
 
 
 @app.delete('/user/{user_id}')
-def delete_user(user_id: int) -> str:
+def delete_user(user_id: int) -> User:
     try:
-        users.pop(user_id)
-        return f"User {users} is deleted"
-    except IndexError:
+        user_del = next(user for user in users if user.id == user_id)
+        users.remove(user_del)
+        return user_del
+    except StopIteration:
         raise HTTPException(status_code=404, detail="User was not found")
