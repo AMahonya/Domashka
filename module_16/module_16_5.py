@@ -25,35 +25,47 @@ def get_main_page(request: Request) -> HTMLResponse:
 
 
 @app.get('/user/{user_id}')
-def get_user(request: Request, user_id: int) -> HTMLResponse:
+def get_user(request: Request, user_id: Annotated[int, Path(description="ID пользователя")]) -> HTMLResponse:
     try:
-        return templates.TemplateResponse("users.html", {"request": request, "user": users[user_id]})
+        user = users[user_id - 1]
+        return templates.TemplateResponse("users.html", {"request": request, "user": user})
     except IndexError:
         raise HTTPException(status_code=404, detail="User was not found")
 
 
 @app.post("/user/{username}/{age}")
-def create_user(user: User) -> str:
-    user.id = len(users)
-    users.append(user)
-    return f"{user} Регистрация прошла успешна!"
+def create_user(username: Annotated[str, Path(description="Имя пользователя")],
+                age: Annotated[int, Path(description="Возраст пользователя")]) -> User:
+    if users:
+        new_id = users[-1].id + 1
+    else:
+        new_id = 1
+    new_user = User(id=new_id, username=username, age=age)
+    users.append(new_user)
+    return new_user
 
 
 @app.put('/user/{user_id}/{username}/{age}')
-def update_user(user_id: int, username: str, age: int) -> str:
+def update_user(user_id: Annotated[int, Path(description="ID пользователя")],
+                username: Annotated[str, Path(description="Имя пользователя")],
+                age: Annotated[int, Path(description="Возраст пользователя")]) -> User:
     try:
-        edit_user = users[user_id]
+        edit_user = next(user for user in users if user.id == user_id)
         edit_user.username = username
         edit_user.age = age
-        return f"{edit_user} Данные успешно обнавлены!"
-    except IndexError:
+        return edit_user
+    except StopIteration:
         raise HTTPException(status_code=404, detail="User was not found")
 
 
 @app.delete('/user/{user_id}')
-def delete_user(user_id: int) -> str:
+def delete_user(user_id: Annotated[int, Path(description="ID пользователя")]) -> User:
     try:
-        users.pop(user_id)
-        return f"User {users} is deleted"
-    except IndexError:
+        user_del = next(user for user in users if user.id == user_id)
+        users.remove(user_del)
+
+        for i, user in enumerate(users):
+            user.id = i + 1
+        return user_del
+    except StopIteration:
         raise HTTPException(status_code=404, detail="User was not found")
