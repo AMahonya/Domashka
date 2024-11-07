@@ -1,7 +1,8 @@
 from app.backend.db import Base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from app.models import *
+from sqlalchemy.schema import CreateTable
 
 
 class User(Base):
@@ -15,5 +16,5 @@ class User(Base):
 
     tasks =  relationship("Task", back_populates="user")
 
-from sqlalchemy.schema import CreateTable
+
 print(CreateTable(User.__table__))
