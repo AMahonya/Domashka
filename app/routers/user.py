@@ -28,6 +28,11 @@ async def user_by_id(user_id: int, db: Annotated[Session, Depends(get_db)]):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User was not found")
 
 
+@router.get("/user_id/tasks")
+async def tasks_by_user_id(user_id: int, db: Annotated[Session, Depends(get_db)]):
+    tasks_all = db.scalars(select(Task).where(Task.user_id == user_id)).all()
+    return tasks_all
+
 
 @router.post("/create")
 async def create_user(db: Annotated[Session, Depends(get_db)], user_create: CreateUser):
@@ -69,12 +74,13 @@ async def update_user(db: Annotated[Session, Depends(get_db)], user_update: Upda
 
 @router.delete("/delete")
 async def delete_user(user_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(
-        delete(User).where(User.id == user_id)
-    )
-    db.commit()
-    if result.rowcount > 0:
+    result = db.query(User).filter(User.id == user_id).first()
+
+    if result:
+        db.query(Task).filter(Task.user_id == user_id).delete(synchronize_session='fetch')
+        db.delete(result)
+        db.commit()
         return {'status_code': status.HTTP_200_OK, 'transaction': 'User delete is successful!'}
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User was not found")
-    pass
+
